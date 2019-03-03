@@ -1,1 +1,13 @@
-* Import other kinds of objects
+* find a way to avoid UBSAN errors:
+ liborigin/OriginObj.h:142:9: runtime error: load of value 216, which is not a valid value for type 'bool'
+ liborigin/OriginObj.h:390:9: runtime error: load of value 34, which is not a valid value for type 'Attach'
+ liborigin/OriginObj.h:419:12: runtime error: load of value 34, which is not a valid value for type 'Origin::Attach'
+ liborigin/OriginObj.h:679:9: runtime error: load of value 7, which is not a valid value for type 'bool'
+ liborigin/OriginObj.h:695:9: runtime error: load of value 136, which is not a valid value for type 'bool'
+ liborigin/OriginObj.h:695:9: runtime error: load of value 186, which is not a valid value for type 'bool'
+ liborigin/OriginObj.h:695:9: runtime error: load of value 32701, which is not a valid value for type 'ValueType'
+ liborigin/OriginObj.h:709:9: runtime error: load of value 128, which is not a valid value for type 'bool'
+ liborigin/OriginObj.h:709:9: runtime error: load of value 171, which is not a valid value for type 'AxisPosition'
+ liborigin/OriginObj.h:709:9: runtime error: load of value 206, which is not a valid value for type 'AxisPosition'
+ liborigin/OriginObj.h:709:9: runtime error: load of value 97, which is not a valid value for type 'bool'
+? import datasets, graphs, functions

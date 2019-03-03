@@ -1,8 +1,8 @@
 Package: Ropj
 Type: Package
 Title: Import Origin(R) Project Files
-Version: 0.1-1
-Date: 2019-02-06
+Version: 0.2-1
+Date: 2019-03-01
 Authors@R: c(person('Miquel', 'Garriga', email = 'gbmiquel@gmail.com', role = c('aut', 'cph')),
 	person('Stefan', 'Gerlach', email = 'stefan.gerlach@uni-konstanz.de', role = c('aut', 'cph')),
 	person('Ion', 'Vasilief', email = 'ion_vasilief@yahoo.fr', role = c('aut', 'cph')),
@@ -15,16 +15,15 @@ Authors@R: c(person('Miquel', 'Garriga', email = 'gbmiquel@gmail.com', role = c(
 	person('Ivan', 'Krylov', email = 'krylov.r00t@gmail.com', role = c('cre', 'cph')))
 Description: Read the data from Origin(R) project files ('*.opj')
 	<https://www.originlab.com/doc/User-Guide/Origin-File-Types>.
-	For now, only spreadsheet objects are imported as data frames
-	and no export is planned. More object types may be available to
-	be imported later.
+	No write support is planned. More object types may be available
+	to be imported later.
 License: GPL (>= 3)
-Imports: Rcpp (>= 1.0.0)
+Imports: Rcpp (>= 0.12.9)
 LinkingTo: Rcpp
 URL: https://github.com/aitap/Ropj
 BugReports: https://github.com/aitap/Ropj/issues
 NeedsCompilation: yes
-Packaged: 2019-02-06 15:12:05 UTC; aitap
+Packaged: 2019-03-03 16:00:31 UTC; aitap
 Author: Miquel Garriga [aut, cph],
   Stefan Gerlach [aut, cph],
   Ion Vasilief [aut, cph],
@@ -37,4 +36,4 @@ Author: Miquel Garriga [aut, cph],
   Ivan Krylov [cre, cph]
 Maintainer: Ivan Krylov <krylov.r00t@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-02-11 21:33:22 UTC
+Date/Publication: 2019-03-03 22:40:28 UTC

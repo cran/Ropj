@@ -1,3 +1,4 @@
+% vi:et:ts=2
 \name{Ropj-package}
 \alias{Ropj-package}
 \alias{Ropj}
@@ -10,7 +11,6 @@
 
   This package exports a single function, \command{read.opj}, that tries
   to read an OPJ file and return a list of objects that it consists of.
-  For now, only tabular information is returned.
 
   No write support seems to be planned in the foreseeable future.
 }
@@ -30,5 +30,5 @@
 %  Optional links to other man pages
 %}
 \examples{
-  \dontrun{listof.dataframes <- read.opj('data.opj')}
+  \dontrun{x <- read.opj('data.opj')}
 }

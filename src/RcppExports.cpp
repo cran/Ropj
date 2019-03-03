@@ -6,19 +6,20 @@
 using namespace Rcpp;
 
 // read_opj
-List read_opj(const std::string& file);
-RcppExport SEXP _Ropj_read_opj(SEXP fileSEXP) {
+List read_opj(const std::string& file, const char * encoding);
+RcppExport SEXP _Ropj_read_opj(SEXP fileSEXP, SEXP encodingSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const std::string& >::type file(fileSEXP);
-    rcpp_result_gen = Rcpp::wrap(read_opj(file));
+    Rcpp::traits::input_parameter< const char * >::type encoding(encodingSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_opj(file, encoding));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_Ropj_read_opj", (DL_FUNC) &_Ropj_read_opj, 1},
+    {"_Ropj_read_opj", (DL_FUNC) &_Ropj_read_opj, 2},
     {NULL, NULL, 0}
 };
 
