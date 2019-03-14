@@ -15,21 +15,52 @@ using namespace Rcpp;
 
 #include "OriginFile.h"
 
-static String decode_string(const std::string & s, const char * encoding) {
-	Environment base("package:base");
-	Function iconv = base["iconv"];
-	return iconv(s, Named("from", encoding), Named("to", ""));
-}
+#include "R_ext/Riconv.h"
+class decoder {
+	void * cd;
+public:
+	decoder(const char * from) {
+		cd = Riconv_open("", from);
+		if (cd == (void*)(-1))
+			throw std::invalid_argument(std::string("Cannot decode from ") + from);
+	}
+	~decoder() {
+		Riconv_close(cd);
+	}
+	String operator()(const std::string & s) {
+		std::string out(s.size(), 0);
 
-static DataFrame import_spreadsheet(const Origin::SpreadSheet & osp, const char * encoding) {
+		const char * inbuf = s.c_str();
+		char * outbuf = &out[0]; // ick
+		size_t inbytesleft = s.size(), outbytesleft = out.size();
+
+		// this is what happens when you bring C to an STL fight
+		while (Riconv(cd, &inbuf, &inbytesleft, &outbuf, &outbytesleft) == (size_t)-1) {
+			if (errno != E2BIG) throw std::runtime_error("Cannot decode string");
+			ptrdiff_t pos = outbuf - &out[0];
+			outbytesleft += out.size();
+			out.resize(out.size() * 2);
+			outbuf = &out[pos];
+		}
+		out.resize(out.size() - outbytesleft); // get rid of trailing \0
+
+		return String(out, CE_NATIVE);
+	}
+};
+
+static DataFrame import_spreadsheet(const Origin::SpreadSheet & osp, decoder & dec) {
 	List rsp(osp.columns.size());
 	StringVector names(rsp.size()), comments(rsp.size()), commands(rsp.size());
 
+	size_t maxRows = osp.maxRows;
+	for (const Origin::SpreadColumn & osc : osp.columns)
+		maxRows = std::max(osc.data.size(), maxRows);
+
 	for (unsigned int c = 0; c < osp.columns.size(); c++) {
 		const Origin::SpreadColumn & ocol = osp.columns[c];
-		names[c] = decode_string(ocol.name, encoding);
-		comments[c] = decode_string(ocol.comment, encoding);
-		commands[c] = decode_string(ocol.command, encoding);
+		names[c] = dec(ocol.name);
+		comments[c] = dec(ocol.comment);
+		commands[c] = dec(ocol.command);
 		if (
 			std::all_of(
 				ocol.data.begin(), ocol.data.end(),
@@ -38,20 +69,20 @@ static DataFrame import_spreadsheet(const Origin::SpreadSheet & osp, const char 
 				}
 			)
 		){
-			NumericVector ncol(osp.maxRows, NA_REAL);
-			for (size_t row = 0; row < std::min(ocol.data.size(), (size_t)osp.maxRows); row++) {
+			NumericVector ncol(maxRows, NA_REAL);
+			for (size_t row = 0; row < ocol.data.size(); row++) {
 				ncol[row] = ocol.data[row].as_double();
 				if (ncol[row] == _ONAN) ncol[row] = R_NaN;
 			}
 			rsp[c] = ncol;
 		} else {
-			StringVector ccol(osp.maxRows, NA_STRING);
-			for (size_t row = 0; row < std::min(ocol.data.size(), (size_t)osp.maxRows); row++) {
+			StringVector ccol(maxRows, NA_STRING);
+			for (size_t row = 0; row < ocol.data.size(); row++) {
 				const Origin::variant & v = ocol.data[row];
 				if (v.type() == Origin::variant::V_DOUBLE) {
 					if (v.as_double() != _ONAN) ccol[row] = std::to_string(v.as_double()); // yuck
 				} else {
-					ccol[row] = decode_string(v.as_string(), encoding);
+					ccol[row] = dec(v.as_string());
 				}
 			}
 			rsp[c] = ccol;
@@ -72,7 +103,7 @@ static NumericVector make_dimnames(double from, double to, unsigned short size) 
 	return seq(Named("from", from), Named("to", to), Named("length.out", size));
 }
 
-static List import_matrix(const Origin::Matrix & omt, const char * encoding) {
+static List import_matrix(const Origin::Matrix & omt, decoder & dec) {
 	List ret(omt.sheets.size());
 	StringVector names(ret.size()), commands(ret.size());
 	for (unsigned int i = 0; i < omt.sheets.size(); i++) {
@@ -92,8 +123,8 @@ static List import_matrix(const Origin::Matrix & omt, const char * encoding) {
 		rms.attr("dimnames") = dimnames;
 
 		ret[i] = transpose(rms);
-		names[i] = decode_string(omt.sheets[i].name, encoding);
-		commands[i] = decode_string(omt.sheets[i].command, encoding);
+		names[i] = dec(omt.sheets[i].name);
+		commands[i] = dec(omt.sheets[i].command);
 	}
 	ret.attr("names") = names;
 	ret.attr("commands") = commands;
@@ -102,6 +133,7 @@ static List import_matrix(const Origin::Matrix & omt, const char * encoding) {
 
 // [[Rcpp::export(name="read.opj")]]
 List read_opj(const std::string & file, const char * encoding = "latin1") {
+	decoder dec(encoding);
 	OriginFile opj(file);
 
 	if (!opj.parse()) stop("Failed to open and/or parse " + file); // throws
@@ -114,22 +146,22 @@ List read_opj(const std::string & file, const char * encoding = "latin1") {
 
 	for (unsigned int i = 0; i < opj.spreadCount(); i++, j++) {
 		const Origin::SpreadSheet & osp = opj.spread(i);
-		retn[j] = decode_string(osp.name, encoding);
-		retl[j] = decode_string(osp.label, encoding);
-		ret[j] = import_spreadsheet(osp, encoding);
+		retn[j] = dec(osp.name);
+		retl[j] = dec(osp.label);
+		ret[j] = import_spreadsheet(osp, dec);
 	}
 
 	for (unsigned int i = 0; i < opj.excelCount(); i++, j++) {
 		const Origin::Excel & oex = opj.excel(i);
-		retn[j] = decode_string(oex.name, encoding);
-		retl[j] = decode_string(oex.label, encoding);
+		retn[j] = dec(oex.name);
+		retl[j] = dec(oex.label);
 
 		List exl(oex.sheets.size());
 		StringVector exln(oex.sheets.size());
 
 		for (size_t sp = 0; sp < oex.sheets.size(); sp++) {
-			exl[sp] = import_spreadsheet(oex.sheets[sp], encoding);
-			exln[sp] = decode_string(oex.sheets[sp].name, encoding);
+			exl[sp] = import_spreadsheet(oex.sheets[sp], dec);
+			exln[sp] = dec(oex.sheets[sp].name);
 		}
 
 		exl.attr("names") = exln;
@@ -138,16 +170,16 @@ List read_opj(const std::string & file, const char * encoding = "latin1") {
 
 	for (unsigned int i = 0; i < opj.matrixCount(); i++, j++) {
 		const Origin::Matrix & omt = opj.matrix(i);
-		retn[j] = decode_string(omt.name, encoding);
-		retl[j] = decode_string(omt.label, encoding);
-		ret[j] = import_matrix(omt, encoding);
+		retn[j] = dec(omt.name);
+		retl[j] = dec(omt.label);
+		ret[j] = import_matrix(omt, dec);
 	}
 
 	for (unsigned int i = 0; i < opj.noteCount(); i++, j++) {
 		const Origin::Note & ont = opj.note(i);
-		retn[j] = decode_string(ont.name, encoding);
-		retl[j] = decode_string(ont.label, encoding);
-		ret[j] = decode_string(ont.text, encoding);
+		retn[j] = dec(ont.name);
+		retl[j] = dec(ont.label);
+		ret[j] = dec(ont.text);
 	}
 
 	ret.attr("names") = retn;
