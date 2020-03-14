@@ -1,3 +1,12 @@
+2020-03-14 v0.3
+
+* Use the 'comment' attribute (as in comment() function) for spreadsheet
+  imports in addition to 'comments' attribute (as before)
+* Pass the ... arguments from read.opj to as.data.frame, making it
+  possible to set stringsAsFactors and other parameters
+* New 'tree' parameter to return the objects in a tree structure instead
+  of a flat list
+
 2019-03-14 v0.2-2
 
 * Prevent truncation of long tables when importing large files

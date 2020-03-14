@@ -14,21 +14,11 @@
 
   No write support seems to be planned in the foreseeable future.
 }
-\author{
-  \packageAuthor{Ropj}
-  
-  Maintainer: \packageMaintainer{Ropj}
-}
 \references{
   \url{https://sourceforge.net/projects/liborigin/}: the \code{liborigin}
   implementation used by this package. Seems to be maintained as of 2019.
 }
-% Optionally other standard keywords, one per line,
-% from the file KEYWORDS in the R documentation.
 \keyword{package}
-%\seealso{
-%  Optional links to other man pages
-%}
 \examples{
   \dontrun{x <- read.opj('data.opj')}
 }

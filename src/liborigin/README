@@ -3,17 +3,6 @@ liborigin, standalone version
 
 This code is a standalone library for reading OriginLab project files.
 
-The fork removes references to std::cerr and std::cout from the library
-per R recommendations for packages. It should be updated when new commits
-appear upstream. The author may later try to submit the patches upstream,
-removing the need for the fork.
-
-https://cran.r-project.org/doc/manuals/R-exts.html#Writing-portable-packages
-> Compiled code should not write to stdout or stderr and C++ and Fortran
-> I/O should not be used. As with the previous item such calls may come
-> from external software and may never be called, but package authors are
-> often mistaken about that.
-
 It is based on the code at
 	http://sourceforge.net/projects/liborigin
 	http://soft.proindependent.com/liborigin2
