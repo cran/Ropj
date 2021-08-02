@@ -13,8 +13,8 @@
 }
 \arguments{
   \item{file}{
-    Path to the OPJ file to parse.  Only file paths are supported,
-    not R connections.
+    Path to the OPJ file to parse. Only file paths are supported,
+    not R connections. Path is not expanded automatically.
   }
   \item{encoding}{
     Encoding of the strings inside the file being opened. This should
@@ -34,7 +34,7 @@
   }
   \item{\dots}{
     The rest of the arguments is passed to \code{\link{as.data.frame}}
-    when converting spreadsheets from lists columns, making it possible
+    when converting spreadsheets from lists of columns, making it possible
     to set \code{stringsAsFactors} and other parameters as needed.
   }
 }
@@ -72,8 +72,9 @@
   contains the long names of the objects
   stored in the file.
 
-  When \code{tree = TRUE}, the list names are long names (if available)
-  and the list itself represents the folder structure of the project.
+  When \code{tree = TRUE}, the list names are long names (if present;
+  short otherwise) and the list itself represents the folder structure
+  of the project.
 }
 \note{
   While Origin(R) and its scripting language seem to rely on the
@@ -81,7 +82,7 @@
   neither \emph{long} names nor \emph{folder} names are guaranteed to
   avoid collisions. Tree-like lists returned by \code{read.opj(..., tree =
   TRUE)} might be easier to navigate interactively but present problems
-  if someone gives one or many folders or objects the same long name.
+  if someone gives multiple folders or objects the same long name.
 }
 \examples{
   x <- read.opj(system.file('test.opj', package = 'Ropj'))
