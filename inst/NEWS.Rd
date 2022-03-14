@@ -1,5 +1,9 @@
 \name{NEWS}
 \title{News for package \pkg{Ropj}}
+\section{Changes in Ropj version 0.3-2 (2022-03-14)}{\itemize{
+  \item Update bundled \code{liborigin}, fixing issues related to newer
+  project files.
+}}
 \section{Changes in Ropj version 0.3-1 (2021-08-02)}{\itemize{
   \item Update \code{liborigin} from \verb{3.0.0} with patches to the
   officially released version \verb{3.0.1}, fixing some correctness

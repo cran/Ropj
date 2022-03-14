@@ -52,16 +52,16 @@ OriginFile::OriginFile(const string& fileName)
 		return;
 	}
 #endif // GENERATE_CODE_FOR_LOG
+	LOG_PRINT(logfile, "File: %s\n", fileName.c_str())
 
 	string vers;
 	getline(file, vers);
+	file.close();
+
 	long majorVersion = strtol(vers.substr(5,1).c_str(),nullptr,10);
 	//char locale_decpoint = vers[6];
 	buildVersion = strtol(vers.substr(7).c_str(),nullptr,10);
 	//long buildNumber = strtol(vers.substr(12).c_str(),0,10);
-	file.close();
-
-	LOG_PRINT(logfile, "File: %s\n", fileName.c_str())
 
 	// translate version
 	// see https://www.originlab.com/index.aspx?go=SUPPORT&pid=3325
@@ -138,26 +138,23 @@ OriginFile::OriginFile(const string& fileName)
 	} else if (buildVersion < 3360) { // 2019b.0 (9.6.5.169) SR0 3359
 		fileVersion = 965;
 		newFileVersion = 20195;
-	} else if (buildVersion < 3380) { // 2020.0 (9.7.0.185) SR0 ????
+	} else if (buildVersion < 3381) { // 2020.0 (9.7.0.185), 2020.1 (9.7.0.188) SR0, SR1 3380
 		fileVersion = 970;
 		newFileVersion = 20200;
-	} else if (buildVersion < 3381) { // 2020.1 (9.7.0.188) SR1 3380
-		fileVersion = 971;
-		newFileVersion = 20201;
 	} else if (buildVersion < 3426) { // 2020b.0 (9.7.5.184) SR0 3425
 		fileVersion = 975;
 		newFileVersion = 20205;
 	} else if (buildVersion < 3446) { // 2021.0 (9.8.0.200) SR0 3445
 		fileVersion = 980;
 		newFileVersion = 20210;
-	} else if (buildVersion < 3479) { // 2021b.0 (9.8.5.201) SR0 3478
+	} else if (buildVersion < 3479) { // 2021b.0 (9.8.5.201), 2021b.1 (9.8.5.204), 2021b.2 (9.8.5.212) SR0, SR1, SR2 3478
 		fileVersion = 985;
 		newFileVersion = 20215;
 	} else {
-		// > 2021bSR0
+		// > 2021bSR2
 		fileVersion = 986;
 		newFileVersion = 20216;
-		LOG_PRINT(logfile, "Found project version 2021bSR1 (9.8.6) or newer\n")
+		LOG_PRINT(logfile, "Found project version 2021bSR3 (9.8.6) or newer\n")
 	}
 
 	if (newFileVersion == 0) {
@@ -170,11 +167,12 @@ OriginFile::OriginFile(const string& fileName)
 	// There are ways to keep logfile open and pass it to parser routine,
 	// but I choose to do the same as with 'file', close it and reopen in 'parse'
 	// routines.
-#ifdef GENERATE_CODE_FOR_LOG
-	fclose(logfile);
-#endif // GENERATE_CODE_FOR_LOG
 	parser.reset(createOriginAnyParser(fileName));
 	ioError=0;
+
+#ifdef GENERATE_CODE_FOR_LOG
+	fclose(logfile);
+#endif
 }
 
 bool OriginFile::parse()

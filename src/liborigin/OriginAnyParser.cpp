@@ -402,6 +402,7 @@ bool OriginAnyParser::readLayerElement() {
 	string lye_header = readObjectAsString(lye_header_size);
 
 	// get known info
+	LOG_PRINT(logfile, "   Reading Layer properties ...\n")
 	getLayerProperties(lye_header, lye_header_size);
 
 	// go to end of layer header
@@ -1438,7 +1439,7 @@ void OriginAnyParser::getLayerProperties(const string& lye_header, unsigned int 
 
 Origin::Color OriginAnyParser::getColor(const string& strbincolor) {
 	/* decode a color value from a 4 byte binary string */
-	Origin::Color result;
+	Origin::Color result{Origin::Color::Regular, {Origin::Color::Black}};
 	unsigned char sbincolor[4];
 	for (int i=0; i < 4; i++) {
 		sbincolor[i] = strbincolor[i];
@@ -1446,7 +1447,6 @@ Origin::Color OriginAnyParser::getColor(const string& strbincolor) {
 	switch(sbincolor[3]) {
 		case 0:
 			if(sbincolor[0] < 0x64) {
-				result.type = Origin::Color::Regular;
 				result.regular = sbincolor[0];
 			} else {
 				switch(sbincolor[2]) {
@@ -1477,13 +1477,10 @@ Origin::Color OriginAnyParser::getColor(const string& strbincolor) {
 				result.type = Origin::Color::None;
 			else if(sbincolor[0] == 0xF7)
 				result.type = Origin::Color::Automatic;
-			else {
-				result.type = Origin::Color::Regular;
+			else
 				result.regular = sbincolor[0];
-			}
 			break;
 		default:
-			result.type = Origin::Color::Regular;
 			result.regular = sbincolor[0];
 			break;
 	}
@@ -1563,6 +1560,18 @@ void OriginAnyParser::getAnnotationProperties(const string& anhd, unsigned int a
 		if (sec_name == "OR") glayer.yAxis.formatAxis[1].factor = andt1.c_str();
 		if (sec_name == "OB") glayer.xAxis.formatAxis[0].factor = andt1.c_str();
 		if (sec_name == "OT") glayer.xAxis.formatAxis[1].factor = andt1.c_str();
+		if (sec_name == "X1T") {
+			glayer.xAxis.anchor = stod(andt1);
+			LOG_PRINT(logfile, "     x axis anchor = %g\n", glayer.xAxis.anchor)
+		}
+		if (sec_name == "Y1T") {
+			glayer.yAxis.anchor = stod(andt1);
+			LOG_PRINT(logfile, "     y axis anchor = %g\n", glayer.yAxis.anchor)
+		}
+		if (sec_name == "Z1T") {
+			glayer.zAxis.anchor = stod(andt1);
+			LOG_PRINT(logfile, "     z axis anchor = %g\n", glayer.zAxis.anchor)
+		}
 
 		unsigned char type = andt1[0x00];
 		LineVertex begin, end;
@@ -1674,9 +1683,11 @@ void OriginAnyParser::getAnnotationProperties(const string& anhd, unsigned int a
 		double width = (double)w1/500.0;
 
 		Figure figure;
-		stmp.str(andt1.substr(0x05));
-		GET_SHORT(stmp, w1)
-		figure.width = (double)w1/500.0;
+		if (andt1.size() > 4) {
+			stmp.str(andt1.substr(0x05));
+			GET_SHORT(stmp, w1)
+			figure.width = (double)w1/500.0;
+		}
 		figure.style = andt1[0x08];
 
 		if (andt1sz > 0x4D) {
@@ -2928,8 +2939,7 @@ void OriginAnyParser::getZcolorsMap(ColorMap& colorMap, const string& cmapdata, 
 		GET_SHORT(stmp, val)
 	}
 
-	ColorMapLevel level;
-	level.fillColor = lowColor;
+	ColorMapLevel level = {lowColor, 0, lowColor, 1., true, lowColor, 0, 1., true};
 	colorMap.levels.push_back(make_pair(zmin, level));
 
 	for (int i = 0; i < (colorMapSize + 1); ++i) {
