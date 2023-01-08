@@ -93,10 +93,10 @@
   x$MBook1$MSheet1[1:4,1:4]
   x$Note1
 
-  \dontrun{
+  if ('CP1251' \%in\% iconvlist()) {
     # encoding names aren't guaranteed to be supported across all platforms
-    x <- read.opj(system.file('test.opj', package = 'Ropj'), 'WINDOWS-1251')
-    x$cyrillic
+    x <- read.opj(system.file('test.opj', package = 'Ropj'), 'CP1251')
+    print(x$cyrillic)
   }
 
   str(read.opj(system.file('tree.opj', package = 'Ropj'), tree = TRUE))

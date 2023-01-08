@@ -5,11 +5,6 @@
 
 using namespace Rcpp;
 
-#ifdef RCPP_USE_GLOBAL_ROSTREAM
-Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
-Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
-#endif
-
 // read_opj
 List read_opj(const std::string& file, const char * encoding, bool tree);
 RcppExport SEXP _Ropj_read_opj(SEXP fileSEXP, SEXP encodingSEXP, SEXP treeSEXP) {

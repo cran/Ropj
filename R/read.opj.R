@@ -20,25 +20,34 @@
 # of Long Name, Comment and Units (or whatever).
 .get.long.name <- function(lst, name) {
 	ret <- sub('\r\n.*$', '', comment(lst)[names(lst) == name])
-	if (ret == "") name else ret
+	# we're assuming that short names are unique, but just in case, fall
+	# back to the short name if something happens
+	if (length(ret) != 1 || ret == "") name else ret
 }
 
-.expand.tree <- function(tree, lst) lapply(
-	setNames( # rename everything to long names, if possible
-		tree,
-		vapply(
-			names(tree),
-			# folders (lists here) already have their long names, while
-			# other objects must be explicitly renamed if long name exists
-			function(n) if (is.list(tree[[n]])) n else .get.long.name(lst, n),
-			""
+# tree: a named list of lists and character strings. Lists correspond to
+# folders; character strings correspond to short (unique) names of
+# objects. NULLs correspond to types we don't understand.
+# lst: a list mapping short names to objects.
+.expand.tree <- function(tree, lst) {
+	tree <- Filter(Negate(is.null), tree)
+	lapply(
+		setNames( # rename everything to long names, if possible
+			tree,
+			vapply(
+				names(tree),
+				# folders (lists here) already have their long names, while
+				# other objects must be explicitly renamed if long name exists
+				function(n) if (is.list(tree[[n]])) n else .get.long.name(lst, n),
+				""
+			)
+		),
+		function(x) switch(typeof(x),
+			list = .expand.tree(x, lst),
+			character = lst[[x]]
 		)
-	),
-	function(x) switch(typeof(x),
-		list = .expand.tree(x, lst),
-		character = lst[[x]]
 	)
-)
+}
 
 # Get the attr-annotated list-of-whatever from the C++ code and transform it
 # into usual R data structures.

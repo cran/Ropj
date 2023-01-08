@@ -21,7 +21,7 @@ class decoder {
 	void * cd;
 public:
 	decoder(const char * from) {
-		cd = Riconv_open("", from);
+		cd = Riconv_open("UTF-8", from);
 		if (cd == (void*)(-1))
 			throw std::invalid_argument(std::string("Cannot decode from ") + from);
 	}
@@ -49,7 +49,7 @@ public:
 		auto nulpos = out.find('\0');
 		if (nulpos != std::string::npos) out.erase(nulpos);
 
-		return String(out, CE_NATIVE);
+		return String(out, CE_UTF8);
 	}
 };
 
