@@ -1,5 +1,10 @@
 \name{NEWS}
 \title{News for package \pkg{Ropj}}
+\section{Changes in Ropj version 0.3-4 (2023-03-14)}{\itemize{
+  \item The package now uses whatever C++ standard is set by default,
+  but may explicitly request C++17, C++14 or C++11 on older versions of
+  \R where C++ < 11 was the default.
+}}
 \section{Changes in Ropj version 0.3-3 (2023-01-08)}{\itemize{
   \item Importing OPJ files containing unsupported objects with
   \code{tree = TRUE} now avoids an error in the R code.
