@@ -1,5 +1,9 @@
 \name{NEWS}
 \title{News for package \pkg{Ropj}}
+\section{Changes in Ropj version 0.3-5 (2024-03-14)}{\itemize{
+  \item Updated bundled \code{liborigin}, fixing a potential buffer
+  overflow.
+}}
 \section{Changes in Ropj version 0.3-4 (2023-03-14)}{\itemize{
   \item The package now uses whatever C++ standard is set by default,
   but may explicitly request C++17, C++14 or C++11 on older versions of

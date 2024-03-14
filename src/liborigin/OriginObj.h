@@ -3,7 +3,8 @@
     Description          : Origin internal object classes
     --------------------------------------------------------------------
     SPDX-FileCopyrightText: 2005-2007, 2017 Stefan Gerlach
-    SPDX-FileCopyrightText: 2007-2008 Alex Kargovsky Ion Vasilief <kargovsky*yumr.phys.msu.su, ion_vasilief*yahoo.fr (use @ for *)>
+    SPDX-FileCopyrightText: 2007-2008 Alex Kargovsky <kargovsky*yumr.phys.msu.su>
+    SPDX-FileCopyrightText: 2007-2008 Ion Vasilief <ion_vasilief*yahoo.fr>
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
@@ -467,6 +468,7 @@ struct TextBox
     int tab;
     BorderType borderType;
     Attach attach;
+    bool shown;
 
     TextBox(const std::string &_text = std::string())
         : text(_text),
@@ -475,10 +477,11 @@ struct TextBox
           rotation(0),
           tab(8),
           borderType(BlackLine),
-          attach(Frame){};
+          attach(Frame),
+          shown(true){};
 
     TextBox(const std::string &_text, Rect _clientRect, Color _color, unsigned short _fontSize,
-            int _rotation, int _tab, BorderType _borderType, Attach _attach)
+            int _rotation, int _tab, BorderType _borderType, Attach _attach, bool _shown = true)
         : text(_text),
           clientRect(_clientRect),
           color(_color),
@@ -486,7 +489,8 @@ struct TextBox
           rotation(_rotation),
           tab(_tab),
           borderType(_borderType),
-          attach(_attach){};
+          attach(_attach),
+          shown(_shown){};
 };
 
 struct PieProperties
@@ -1047,7 +1051,7 @@ struct GraphLayer
     // bool threeDimensional;
     bool is3D() const
     {
-        for (auto c : curves) {
+        for (auto &c : curves) {
             switch (c.type) {
             case GraphCurve::Scatter3D:
             case GraphCurve::Surface3D:

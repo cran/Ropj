@@ -1,7 +1,7 @@
 Package: Ropj
 Type: Package
 Title: Import Origin(R) Project Files
-Version: 0.3-4
+Version: 0.3-5
 Authors@R: c(person('Miquel', 'Garriga', email = 'gbmiquel@gmail.com', role = c('aut', 'cph')),
 	person('Stefan', 'Gerlach', email = 'stefan.gerlach@uni-konstanz.de', role = c('aut', 'cph')),
 	person('Ion', 'Vasilief', email = 'ion_vasilief@yahoo.fr', role = c('aut', 'cph')),
@@ -22,7 +22,7 @@ LinkingTo: Rcpp
 URL: https://github.com/aitap/Ropj
 BugReports: https://github.com/aitap/Ropj/issues
 NeedsCompilation: yes
-Packaged: 2023-03-14 11:31:15 UTC; ivan
+Packaged: 2024-03-14 13:47:00 UTC; ivan
 Author: Miquel Garriga [aut, cph],
   Stefan Gerlach [aut, cph],
   Ion Vasilief [aut, cph],
@@ -35,4 +35,4 @@ Author: Miquel Garriga [aut, cph],
   Ivan Krylov [cre, cph]
 Maintainer: Ivan Krylov <krylov.r00t@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-03-14 12:00:02 UTC
+Date/Publication: 2024-03-14 14:30:06 UTC
