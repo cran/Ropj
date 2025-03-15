@@ -53,7 +53,8 @@
 # into usual R data structures.
 read.opj <- function(file, encoding = 'latin1', tree = FALSE, ...) {
 	ret <- .lapply(
-		read_opj(file, encoding, tree), function(x) if (is.list(x)) switch(
+		read_opj(enc2native(file), encoding, tree), function(x)
+		if (is.list(x)) switch(
 			attr(x, 'type'),
 			spreadsheet = .as.data.frame(x, ...),
 			matrix = .lapply(x, .matrix),

@@ -15,6 +15,11 @@
   \item{file}{
     Path to the OPJ file to parse. Only file paths are supported,
     not R connections. Path is not expanded automatically.
+
+    The path must be representable in the native encoding of the \R
+    session. Unfortunately, a Unicode path that doesn't fit in the ANSI
+    encoding will not work on Windows older than version 10, November
+    2019.
   }
   \item{encoding}{
     Encoding of the strings inside the file being opened. This should
@@ -77,6 +82,8 @@
   of the project.
 }
 \note{
+  The new Unicode file format (\verb{OPJU}) is not supported.
+
   While Origin(R) and its scripting language seem to rely on the
   \emph{short} names of the objects being unique across a project,
   neither \emph{long} names nor \emph{folder} names are guaranteed to

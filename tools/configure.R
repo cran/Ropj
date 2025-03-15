@@ -1,4 +1,13 @@
-library(tools)
+# code heavily inspired by the original tools::Rcmd
+Rcmd <- if (getRversion() >= '3.3.0') tools::Rcmd else function(args) system(
+	if (.Platform$OS.type == 'windows') paste(
+		shQuote(file.path(R.home('bin'), 'Rcmd.exe')),
+		args
+	) else paste(
+		shQuote(file.path(R.home('bin'), 'R')),
+		'CMD', args
+	)
+)
 
 # Since R 3.6.2, C++ defaults to >=11 even on Windows
 cxx_std <- if (getRversion() >= '3.6.2') NULL else {
